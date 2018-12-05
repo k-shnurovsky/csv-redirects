@@ -15,7 +15,7 @@ class CSV_Redirects
         $this->filename = $filename;
         $this->file_path = __DIR__ . '/' . $this->filename;
         $this->uri = $_SERVER['REQUEST_URI'];
-        $this->host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+        $this->host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://".$_SERVER['HTTP_HOST'];
     }
 
 
