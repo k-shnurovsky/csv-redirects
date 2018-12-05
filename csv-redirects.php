@@ -1,8 +1,4 @@
 <?php
-//header("HTTP/1.1 301 Moved Permanently");
-//header("Location: https://www.roccofortehotels.com/de/hotels-and-resorts/masseria-torre-maizza/");
-//exit();
-
 class CSV_Redirects
 {
 
@@ -13,14 +9,13 @@ class CSV_Redirects
     private $filename;
     private $redirects = [];
 
+
     function __construct($filename)
     {
         $this->filename = $filename;
         $this->file_path = __DIR__ . '/' . $this->filename;
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-
-
     }
 
 
@@ -40,11 +35,6 @@ class CSV_Redirects
     {
         $this->getRedirects();
 
-        $this->debug($this->host);
-        $this->debug($this->uri);
-        $this->debug($this->redirects);
-
-
         if (array_key_exists($this->host . $this->uri, $this->redirects)) {
 
             $location = $this->redirects[$this->host . $this->uri];
@@ -53,13 +43,8 @@ class CSV_Redirects
 
         } else {
 
-//            $this->debug($location);
-
-//            header("Location: $this->targeted_host", true);
-            $this->debug('No match!');
+            header("Location:  $this->targeted_host", true);
         }
-
-
     }
 
 
@@ -71,7 +56,8 @@ class CSV_Redirects
         while (false !== ($data = fgetcsv($handle))) {
 
             if ($i) {
-                $this->targeted_host = $this->getTargetedHost($data[1]);
+                $parse_url = parse_url($data[1]);
+                $this->targeted_host = $parse_url['scheme'].'://'.$parse_url['host'];
                 $i = false;
             }
 
@@ -81,15 +67,6 @@ class CSV_Redirects
 
 
         fclose($handle);
-
-    }
-
-
-    private function getTargetedHost($url)
-    {
-
-        $this->debug($url);
-        return $url;
 
     }
 
@@ -119,7 +96,6 @@ class CSV_Redirects
             return false;
         }
 
-        // Check mime type
         if (in_array(mime_content_type($this->file_path), $mime_types)) {
             return $this->file_path;
         } else {
