@@ -95,6 +95,7 @@ function csv_to_301_redirects_get_file() {
  */
 function csv_to_301_redirects_check_file( $file_path = false ) {
 
+
 	// Variables
 	$mime_types = array(
 		'application/csv',
