@@ -39,11 +39,11 @@ class CSV_Redirects
 
             $location = $this->redirects[$this->host . $this->uri];
 
-            header("Location: $location", true);
+            header("Location: $location", true, 301);
 
         } else {
 
-            header("Location:  $this->targeted_host", true);
+            header("Location:  $this->targeted_host", true, 301);
         }
     }
 
