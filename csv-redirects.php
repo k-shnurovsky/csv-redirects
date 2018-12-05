@@ -7,6 +7,8 @@ class CSV_Redirects
 {
 
     private $uri;
+    private $host;
+    private $targeted_host;
     private $file_path;
     private $filename;
     private $redirects = [];
@@ -16,6 +18,8 @@ class CSV_Redirects
         $this->filename = $filename;
         $this->file_path = __DIR__ . '/' . $this->filename;
         $this->uri = $_SERVER['REQUEST_URI'];
+        $this->host = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+
 
     }
 
@@ -36,15 +40,26 @@ class CSV_Redirects
     {
         $this->getRedirects();
 
+        $this->debug($this->host);
         $this->debug($this->uri);
         $this->debug($this->redirects);
 
-        if (array_key_exists($this->uri, $this->redirects)) {
-            $this->debug($this->redirects[$this->uri]);
-            echo "Массив содержит элемент 'first'.";
+
+        if (array_key_exists($this->host . $this->uri, $this->redirects)) {
+
+            $location = $this->redirects[$this->host . $this->uri];
+
+            header("Location: $location", true);
+
         } else {
+
+//            $this->debug($location);
+
+//            header("Location: $this->targeted_host", true);
             $this->debug('No match!');
         }
+
+
     }
 
 
@@ -52,13 +67,29 @@ class CSV_Redirects
     {
         $handle = fopen($this->file_path, 'r');
 
+        $i = true;
         while (false !== ($data = fgetcsv($handle))) {
+
+            if ($i) {
+                $this->targeted_host = $this->getTargetedHost($data[1]);
+                $i = false;
+            }
+
             // Redirects
             $this->redirects[$data[0]] = $data[1];
         }
 
 
         fclose($handle);
+
+    }
+
+
+    private function getTargetedHost($url)
+    {
+
+        $this->debug($url);
+        return $url;
 
     }
 
